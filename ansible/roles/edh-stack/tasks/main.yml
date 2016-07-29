@@ -1,0 +1,24 @@
+---
+- name: create data
+  file: path=/data state=directory mode=0755
+
+- name: create elasticsearch container
+  docker_container:
+    name: elasticsearch
+    image: elasticsearch
+
+- name: create kibana container
+  docker_container:
+    name: kibana
+    image: kibana
+    links:
+      - "elasticsearch:elasticsearch"
+
+- name: create nginx container
+  docker_container:
+    name: nginx
+    image: nginx
+    exposed_ports:
+      - 80:80
+    volumes:
+      - /data:/usr/share/nginx/html:ro

@@ -1,0 +1,7 @@
+---
+- name: install docker to manage nginx, kibana and elasticsearch containers
+  hosts: all
+
+  roles:
+    - docker
+    - edh-stack

@@ -1,0 +1,9 @@
+---
+- name: install docker
+  yum: name=docker state=present
+
+- name: install docker-py
+  pip: name=docker-py executable=/usr/local/bin/pip
+
+- name: ensure docker is running
+  service: name=docker state=started enabled=yes
