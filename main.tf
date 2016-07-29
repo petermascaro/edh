@@ -1,10 +1,45 @@
+# amazon linux 2016.03.3
+variable "aws_amis" {
+  "default" = {
+    "ap-southeast-2" = "ami-dc361ebf"
+  }
+}
+
+variable "aws_instance_connection_user" {
+  "default" = "ec2-user"
+}
+
+variable "aws_region" {
+  "default" = "ap-southeast-2"
+}
+
+variable "ssh_source_cidr_block" {
+  "default" = "0.0.0.0/0"
+}
+
+variable "web_source_cidr_block" {
+  "default" = "0.0.0.0/0"
+}
+
+variable "aws_vpc_cidr_block" {
+  "default" = "10.0.0.0/16"
+}
+
+variable "aws_subnet_cidr_block" {
+  "default" = "10.0.1.0/24"
+}
+
+variable "aws_key_name" {
+  "default" = "pm_keypair"
+}
+
 provider "aws" {
   region = "${var.aws_region}"
 }
 
 resource "aws_key_pair" "pm_key_pair" {
   key_name   = "${var.aws_key_name}"
-  public_key = "${file(var.aws_public_key_path)}"
+  public_key = "${file(var.ssh_public_key_path)}"
 }
 
 resource "aws_vpc" "pm_vpc" {
@@ -75,12 +110,12 @@ resource "aws_instance" "pm_docker" {
     user = "${aws_instance_connection_user}"
   }
 
-  instance_type = "${var.aws_instance_type}"
+  instance_type = "${var.docker_instance_type}"
   ami           = "${lookup(var.aws_amis, var.aws_region)}"
 
   root_block_device {
     volume_type = "gp2"
-    volume_size = "${aws_instance_root_block_device_volume_size}"
+    volume_size = "${var.docker_instance_root_block_device_volume_size}"
   }
 
   key_name               = "${aws_key_pair.pm_key_pair.id}"
@@ -92,6 +127,28 @@ resource "aws_instance" "pm_docker" {
     Name = "pm_docker"
   }
 
+  provisioner "file" {
+    source      = "ansible"
+    destination = "/tmp/"
+
+    connection {
+      user        = "${var.aws_instance_connection_user}"
+      private_key = "${var.ssh_private_key_path}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo -i yum -y install gcc libffi-devel openssl-devel",
+      "sudo -i pip install --upgrade pip ansible",
+      "ansible-playbook -b -i \"localhost,\" -c local /tmp/ansible/site.yml",
+    ]
+
+    connection {
+      user        = "${var.aws_instance_connection_user}"
+      private_key = "${var.ssh_private_key_path}"
+    }
+  }
 }
 
 output "docker_host" {

@@ -1,3 +1,5 @@
 #!/bin/bash -v
-yum -y install docker
-service docker start
+
+# apply security updates
+yum -y install yum-fastestmirror
+yum -y --security update-minimal
