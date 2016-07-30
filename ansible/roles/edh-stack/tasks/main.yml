@@ -1,6 +1,9 @@
 ---
-- name: create data
+- name: create data directory
   file: path=/data state=directory mode=0755
+
+- name: copy content to data directory
+  copy: src=roles/edh-stack/files/ dest=/data owner=root group=root mode=0644
 
 - name: create elasticsearch container
   docker_container:
@@ -18,7 +21,7 @@
   docker_container:
     name: nginx
     image: nginx
-    exposed_ports:
+    published_ports:
       - 80:80
     volumes:
       - /data:/usr/share/nginx/html:ro

@@ -154,3 +154,7 @@ resource "aws_instance" "pm_docker" {
 output "docker_host" {
   value = "${aws_instance.pm_docker.public_ip}"
 }
+
+output "application_url" {
+  value = "http://${aws_instance.pm_docker.public_ip}/"
+}
