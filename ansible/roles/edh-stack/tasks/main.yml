@@ -1,9 +1,18 @@
 ---
+- name: create fluentd conf directory
+  file: path=/data/fluentd/conf state=directory mode=0755
+
+- name: create fluentd log directory
+  file: path=/data/fluentd/log state=directory mode=0777
+
 - name: create nginx html directory
   file: path=/data/nginx/html state=directory mode=0755
 
 - name: create nginx conf directory
   file: path=/data/nginx/conf.d state=directory mode=0755
+
+- name: push fluentd conf content
+  copy: src=roles/edh-stack/files/fluentd/etc/ dest=/data/fluentd/etc owner=root group=root mode=0644
 
 - name: push nginx html content
   copy: src=roles/edh-stack/files/nginx/html/ dest=/data/nginx/html owner=root group=root mode=0644
@@ -15,6 +24,16 @@
   docker_container:
     name: elasticsearch
     image: elasticsearch
+
+- name: create fluentd container
+  docker_container:
+    name: fluentd
+    image: fluent/fluentd
+    links:
+      - elasticsearch:elasticsearch
+    volumes:
+      - /data/fluentd/etc:/fluentd/etc
+      - /data/fluentd/log:/fluentd/log
 
 - name: create kibana container
   docker_container:
@@ -37,4 +56,4 @@
     volumes:
       - /data/nginx/html:/usr/share/nginx/html:ro
       - /data/nginx/conf.d:/etc/nginx/conf.d:ro
-      
+  
