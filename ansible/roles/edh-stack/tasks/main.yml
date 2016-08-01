@@ -1,9 +1,15 @@
 ---
-- name: create data directory
-  file: path=/data state=directory mode=0755
+- name: create nginx html directory
+  file: path=/data/nginx/html state=directory mode=0755
 
-- name: copy content to data directory
-  copy: src=roles/edh-stack/files/ dest=/data owner=root group=root mode=0644
+- name: create nginx conf directory
+  file: path=/data/nginx/conf.d state=directory mode=0755
+
+- name: push nginx html content
+  copy: src=roles/edh-stack/files/nginx/html/ dest=/data/nginx/html owner=root group=root mode=0644
+
+- name: push nginx conf content
+  copy: src=roles/edh-stack/files/nginx/conf.d/ dest=/data/nginx/conf.d owner=root group=root mode=0644
 
 - name: create elasticsearch container
   docker_container:
@@ -15,13 +21,20 @@
     name: kibana
     image: kibana
     links:
-      - "elasticsearch:elasticsearch"
+      - elasticsearch:elasticsearch
+    env:
+      NODE_OPTIONS: --max-old-space-size=300
 
 - name: create nginx container
   docker_container:
     name: nginx
     image: nginx
+    links:
+      - kibana:kibana
     published_ports:
       - 80:80
+      - 5601:5601
     volumes:
-      - /data:/usr/share/nginx/html:ro
+      - /data/nginx/html:/usr/share/nginx/html:ro
+      - /data/nginx/conf.d:/etc/nginx/conf.d:ro
+      

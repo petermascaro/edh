@@ -93,6 +93,13 @@ resource "aws_security_group" "pm_web_security_group" {
     cidr_blocks = ["${var.web_source_cidr_block}"]
   }
 
+  ingress {
+    from_port   = 5601
+    to_port     = 5601
+    protocol    = "tcp"
+    cidr_blocks = ["${var.web_source_cidr_block}"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
