@@ -22,7 +22,7 @@ Design
 
   - VPC, subnet, internet gateway, default route, key pair, security group and EC2 instance
 
-    - apply security updates at boot with userdata configuration
+    - apply security updates at boot with "userdata" configuration
     - install Ansible
 
   - push an Ansible playbook to the provisioned EC2 and execute locally
@@ -51,7 +51,7 @@ Design
 Usage
 -----
 
-Default Terraform variables values assume the of existence of "~/.ssh/id_rsa" and "~/.ssh/id_rsa.pub".
+Default values for Terraform SSH key pair variables are "~/.ssh/id_rsa" and "~/.ssh/id_rsa.pub".
 
 These can be overridden using the following environment variables:
 
@@ -67,7 +67,7 @@ $ export AWS_ACCESS_KEY_ID=xxxxx
 $ export AWS_SECRET_ACCESS_KEY=xxxxx
 ```
 
-Clone the following repository and run Terrraform from the top level directory:
+Clone this repository and run Terraform from the top level directory:
 
 ```
 $ git clone https://github.com/petermascaro/edh.git
@@ -79,6 +79,6 @@ Improvements
 ------------
 
 - Packer the Docker host to speed deployment
-- front Nginx (port 80) and Kibana (5601) with dedicated ELBs or attach and EIP to Docker instance in order to preserve endpoints during updates
+- front Nginx (port 80) and Kibana (5601) with dedicated ELBs or attach an EIP to Docker instance in order to preserve endpoints during updates
 - build out the "edh-stack" Ansible role into several separate roles for each service
 - make use of Jinga templates throughout Ansible roles
