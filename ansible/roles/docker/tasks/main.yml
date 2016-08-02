@@ -1,9 +1,12 @@
 ---
+# Install docker using yum
 - name: install docker
   yum: name=docker state=present
 
+# Install docker python binding using pip as required by ansible
 - name: install docker-py
   pip: name=docker-py executable=/usr/local/bin/pip
 
+# Start the docker service with default configuration
 - name: ensure docker is running
   service: name=docker state=started enabled=yes

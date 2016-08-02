@@ -1,30 +1,42 @@
 ---
+# Create fluentd directory for custom fluent.conf to be mounted as volume
 - name: create fluentd etc directory
   file: path=/data/fluentd/etc state=directory mode=0755
 
+# Create fluentd directory for log destination to be mounted as a volume
 - name: create fluentd log directory
   file: path=/data/fluentd/log state=directory mode=0777
 
+# Create nginx parent directory for configuration and content
 - name: create nginx directory
   file: path=/data/nginx state=directory mode=0755
 
+# Push fluentd Dockerfile and etc directory
 - name: push fluentd content
   copy: src=roles/edh-stack/files/fluentd/ dest=/data/fluentd owner=root group=root mode=0644
 
+# Push nginx configuration and html directories for nginx
 - name: push nginx content
   copy: src=roles/edh-stack/files/nginx/ dest=/data/nginx owner=root group=root mode=0644
 
+# Build fluentd image in order to bundle fluentd elasticsearch plugin
+# - point build to Dockerfile found at the following path
 - name: create fluentd image
   docker_image:
     name: fluentd
     state: present
     path: /data/fluentd/
 
+# Create elasticsearch container from default image
 - name: create elasticsearch container
   docker_container:
     name: elasticsearch
     image: elasticsearch
 
+# Create fluentd container from local image
+# - link the elasticsearch container referenced in fluent.conf
+# - publish default port
+# - mount the configuration and log directories as volumes
 - name: create fluentd container
   docker_container:
     name: fluentd
@@ -37,6 +49,9 @@
       - /data/fluentd/etc:/fluentd/etc
       - /data/fluentd/log:/fluentd/log
 
+# Create Kibana container from default image
+# - link the elasticsearch container to pull logs from
+# - configure NODE_OPTIONS to safegaurd against mem leaks
 - name: create kibana container
   docker_container:
     name: kibana
@@ -46,6 +61,10 @@
     env:
       NODE_OPTIONS: --max-old-space-size=300
 
+# Create Nginx container from default image
+# - use fluentd log driver for container logging
+# - link kibana container for secure proxy configuration
+# - mount the html and configuration directories as volumes
 - name: create nginx container
   docker_container:
     name: nginx
