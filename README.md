@@ -55,15 +55,18 @@ Default Terraform variables values assume the of existence of "~/.ssh/id_rsa" an
 
 These can be overridden using the following environment variables:
 
-  TF_VAR_ssh_private_key_path
+```
+TF_VAR_ssh_private_key_path
+TF_VAR_ssh_public_key_path
+```
 
-  TF_VAR_ssh_public_key_path
+Clone the following repository and run Terrraform from the top level directory:
 
-.. code:: shell
-
-  $ git clone https://github.com/petermascaro/edh.git
-  $ cd ./edh
-  $ terraform apply
+```
+$ git clone https://github.com/petermascaro/edh.git
+$ cd ./edh
+$ terraform apply
+```
 
 Improvements
 ------------
