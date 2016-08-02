@@ -60,13 +60,18 @@ TF_VAR_ssh_private_key_path
 TF_VAR_ssh_public_key_path
 ```
 
+Setup AWS credentials for the Terraform provider:
+
+```
+$ export AWS_ACCESS_KEY_ID=xxxxx
+$ export AWS_SECRET_ACCESS_KEY=xxxxx
+```
+
 Clone the following repository and run Terrraform from the top level directory:
 
 ```
 $ git clone https://github.com/petermascaro/edh.git
 $ cd ./edh
-$ export  AWS_ACCESS_KEY_ID=xxxxx
-$ export  AWS_SECRET_ACCESS_KEY=xxxxx
 $ terraform apply
 ```
 
