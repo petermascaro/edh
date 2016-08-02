@@ -65,6 +65,8 @@ Clone the following repository and run Terrraform from the top level directory:
 ```
 $ git clone https://github.com/petermascaro/edh.git
 $ cd ./edh
+$ export  AWS_ACCESS_KEY_ID=xxxxx
+$ export  AWS_SECRET_ACCESS_KEY=xxxxx
 $ terraform apply
 ```
 
