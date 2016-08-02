@@ -1,5 +1,5 @@
 ---
-- name: create fluentd conf directory
+- name: create fluentd etc directory
   file: path=/data/fluentd/etc state=directory mode=0755
 
 - name: create fluentd log directory
@@ -9,7 +9,7 @@
   file: path=/data/nginx state=directory mode=0755
 
 - name: push fluentd content
-  copy: src=roles/edh-stack/files/fluentd/etc/ dest=/data/fluentd/etc owner=root group=root mode=0644
+  copy: src=roles/edh-stack/files/fluentd/ dest=/data/fluentd owner=root group=root mode=0644
 
 - name: push nginx content
   copy: src=roles/edh-stack/files/nginx/ dest=/data/nginx owner=root group=root mode=0644
@@ -18,7 +18,7 @@
   docker_image:
     name: fluentd
     state: present
-    path: roles/edh-stack/files/fluentd/
+    path: /data/fluentd/
 
 - name: create elasticsearch container
   docker_container:
