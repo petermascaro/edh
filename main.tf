@@ -74,7 +74,7 @@ resource "aws_subnet" "pm_subnet" {
   }
 }
 
-resource "aws_security_group" "pm_web_security_group" {
+resource "aws_security_group" "pm_security_group" {
   name        = "pm_web_security_group"
   description = "Allow SSH and HTTP"
   vpc_id      = "${aws_vpc.pm_vpc.id}"
@@ -108,7 +108,7 @@ resource "aws_security_group" "pm_web_security_group" {
   }
 
   tags {
-    Name = "pm_ec2_security_group"
+    Name = "pm_security_group"
   }
 }
 
@@ -126,7 +126,7 @@ resource "aws_instance" "pm_docker" {
   }
 
   key_name               = "${aws_key_pair.pm_key_pair.id}"
-  vpc_security_group_ids = ["${aws_security_group.pm_web_security_group.id}"]
+  vpc_security_group_ids = ["${aws_security_group.pm_security_group.id}"]
   subnet_id              = "${aws_subnet.pm_subnet.id}"
   user_data              = "${file("userdata.sh")}"
 
@@ -158,10 +158,10 @@ resource "aws_instance" "pm_docker" {
   }
 }
 
-output "docker_host" {
-  value = "${aws_instance.pm_docker.public_ip}"
+output "nginx_url" {
+  value = "http://${aws_instance.pm_docker.public_ip}/"
 }
 
-output "application_url" {
-  value = "http://${aws_instance.pm_docker.public_ip}/"
+output "kibana_url" {
+  value = "http://${aws_instance.pm_docker.public_ip}:5601/"
 }

@@ -1,24 +1,24 @@
 ---
 - name: create fluentd conf directory
-  file: path=/data/fluentd/conf state=directory mode=0755
+  file: path=/data/fluentd/etc state=directory mode=0755
 
 - name: create fluentd log directory
   file: path=/data/fluentd/log state=directory mode=0777
 
-- name: create nginx html directory
-  file: path=/data/nginx/html state=directory mode=0755
+- name: create nginx directory
+  file: path=/data/nginx state=directory mode=0755
 
-- name: create nginx conf directory
-  file: path=/data/nginx/conf.d state=directory mode=0755
-
-- name: push fluentd conf content
+- name: push fluentd content
   copy: src=roles/edh-stack/files/fluentd/etc/ dest=/data/fluentd/etc owner=root group=root mode=0644
 
-- name: push nginx html content
-  copy: src=roles/edh-stack/files/nginx/html/ dest=/data/nginx/html owner=root group=root mode=0644
+- name: push nginx content
+  copy: src=roles/edh-stack/files/nginx/ dest=/data/nginx owner=root group=root mode=0644
 
-- name: push nginx conf content
-  copy: src=roles/edh-stack/files/nginx/conf.d/ dest=/data/nginx/conf.d owner=root group=root mode=0644
+- name: create fluentd image
+  docker_image:
+    name: fluentd
+    state: present
+    path: roles/edh-stack/files/fluentd/
 
 - name: create elasticsearch container
   docker_container:
@@ -28,9 +28,11 @@
 - name: create fluentd container
   docker_container:
     name: fluentd
-    image: fluent/fluentd
+    image: fluentd
     links:
       - elasticsearch:elasticsearch
+    published_ports:
+      - 24224:24224
     volumes:
       - /data/fluentd/etc:/fluentd/etc
       - /data/fluentd/log:/fluentd/log
