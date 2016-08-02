@@ -50,6 +50,7 @@
   docker_container:
     name: nginx
     image: nginx
+    log_driver: fluentd
     links:
       - kibana:kibana
     published_ports:
